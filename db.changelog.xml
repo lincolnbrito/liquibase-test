@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?> 
+<!--db.changelog.xml-->
+<databaseChangeLog
+  xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd">
+  
+  <changeSet id="1" author="lincoln">
+    <createTable tableName="user">
+      <column name="id" type="int">
+        <constraints primaryKey="true" nullable="false" />
+      </column>
+      <column name="name" type="varchar(50)">
+        <constraints nullable="false" />
+      </column>
+      <column name="email" type="varchar(128)">
+        <constraints unique="true" nullable="false" />
+      </column>
+    </createTable>
+  </changeSet>
+    
+  <changeSet id="2" author="lincoln">
+    <addAutoIncrement tableName="user" columnName="id" columnDataType="int" />
+    <renameColumn tableName="user" oldColumnName="name" newColumnName="fullname" columnDataType="varchar(100)" />
+    <addColumn tableName="user">
+      <column name="age" type="SMALLINT" />
+    </addColumn>
+  </changeSet>
+
+  <changeSet id="3" author="shameer">
+    <preConditions onFail="HALT">
+      <sqlCheck expectedResult="0">
+        select count(*) from user
+      </sqlCheck>
+    </preConditions>
+    <insert tableName="user">
+      <column name="fullname" value="Admin" />
+      <column name="email" valueDate="'admin@teste.com'" />
+      <column name="age" valueDate="1" />      
+    </insert>
+  </changeSet>
+
+  <changeSet id="4" author="lincoln">
+    <comment>
+      Testando um comentário no changeset Liquibase
+    </comment>
+  </changeSet>
+
+  <changeSet id="5" author="lincoln">
+    <comment>Adicionando tabela teste</comment>
+    <createTable tableName="tabela_teste">
+      <column name="id" type="int" />
+    </createTable>
+    <rollback>
+      <dropTable tableName="tabela_teste" />
+    </rollback>
+  </changeSet>
+
+  <changeSet id="6" author="lincoln">
+    <comment>Inserindo campos na tabela_teste</comment>
+    <addColumn tableName="tabela_teste">
+      <column name="email" type="varchar(50)" />
+      <column name="descricao" type="varchar(100)" />
+      <column name="regra" type="varchar(50)" />
+    </addColumn>
+  </changeSet>
+
+  <changeSet id="7" author="lincoln">
+    <comment>Executa o dump do banco</comment>
+    <executeCommand executable="mysqldump" os="Windows XP"> 
+      <arg value="--add-drop-database"/> 
+      <arg value="--compress"/> 
+      <arg value="liquibase"/> 
+      <arg value="--result-file=liqui.sql"/> 
+    </executeCommand>
+  </changeSet>
+
+  <!--<changeSet id="7" author="lincoln">
+    <comment>Juntando colunas descricao e regra</comment>
+    <mergeColumns 
+      tableName="tabela_teste"
+      column1Name="email"
+      column2Name="descricao"
+      finalColumnName="email_merge_descricao"
+      finalColumnType="varchar(100)"
+      joinString="Bla" />
+  </changeSet>-->
+</databaseChangeLog>
